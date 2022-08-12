@@ -1,4 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
+import { Link } from "react-router-dom";
 
 // palyground에서 사용한 것과 같은 방식
 const ALL_MOVIES = gql`
@@ -23,7 +24,9 @@ export default function Movies() {
     return (
         <div>
             {data.allMovies.map((movie) => (
-                <li key={movie.id}>{movie.title}</li>
+                <li key={movie.id}>
+                    <Link to={`/movies/${movie.id}`}>{movie.title}</Link>
+                </li>
             ))}
         </div>
     );
