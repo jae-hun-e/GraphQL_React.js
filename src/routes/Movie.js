@@ -23,15 +23,6 @@ export default function Movie() {
     });
 
     const onClick = () => {
-        const localOnlyFields = client.cache.readFragment({
-            id: `Movie:${id}`,
-            fragment: gql`
-                fragment MovieReadFragment on Movie {
-                    isLiked
-                }
-            `,
-        });
-        console.log("localOnlyFields : ", localOnlyFields);
         client.cache.writeFragment({
             id: `Movie:${id}`,
             fragment: gql`
@@ -40,10 +31,11 @@ export default function Movie() {
                 }
             `,
             data: {
-                isLiked: localOnlyFields === "null" ? true : !localOnlyFields.isLiked,
+                isLiked: !data.movie.isLiked,
             },
         });
     };
+
     return (
         <Container>
             <Column>
