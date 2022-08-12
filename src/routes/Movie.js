@@ -3,28 +3,46 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 
 const GET_MOVIE = gql`
-    query getMovie($movieId: String!) {
+    query getMovie($movieId: ID!) {
         movie(id: $movieId) {
             id
             title
             medium_cover_image
             rating
+            isLiked @client
         }
     }
 `;
 
 export default function Movie() {
     const { id } = useParams();
-    const { data, loading } = useQuery(GET_MOVIE, {
+    const { data, loading, client } = useQuery(GET_MOVIE, {
         variables: {
             movieId: id,
         },
     });
+
+    const onClick = () => {
+        client.cache.writeFragment({
+            id: `Movie:${id}`,
+            fragment: gql`
+                fragment MovieWriteFragment on Movie {
+                    isLiked
+                }
+            `,
+            data: {
+                isLiked: true,
+            },
+        });
+    };
     return (
         <Container>
             <Column>
                 <Title>{loading ? "Loading..." : `${data.movie?.title}`}</Title>
                 <Subtitle>⭐️ {data?.movie?.rating}</Subtitle>
+                <button onClick={onClick}>
+                    {data?.movie?.isLiked ? "Unlike" : "Like"}
+                </button>
             </Column>
             <Image bg={data?.movie?.medium_cover_image} />
         </Container>
